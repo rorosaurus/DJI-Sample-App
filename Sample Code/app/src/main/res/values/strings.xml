@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DJI SDK Sample</string>
+    <string name="app_name">Test App</string>
     <string name="action_settings">Settings</string>
 
     <string name="sdk_version">DJI SDK Version: 4.0</string>
