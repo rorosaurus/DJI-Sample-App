@@ -1,42 +1,36 @@
 package com.dji.sdk.sample.demo.test;
 
+import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.dji.sdk.sample.R;
 import com.dji.sdk.sample.internal.controller.DJISampleApplication;
-import com.dji.sdk.sample.internal.utils.ToastUtils;
 import com.dji.sdk.sample.internal.view.PresentableView;
 
-import dji.common.camera.SettingsDefinitions;
 import dji.common.error.DJIError;
 import dji.common.flightcontroller.LocationCoordinate3D;
 import dji.common.mission.hotpoint.HotpointHeading;
 import dji.common.mission.hotpoint.HotpointMission;
+import dji.common.mission.hotpoint.HotpointMissionState;
 import dji.common.mission.hotpoint.HotpointStartPoint;
 import dji.common.model.LocationCoordinate2D;
 import dji.common.util.CommonCallbacks;
-import dji.keysdk.BatteryKey;
-import dji.keysdk.CameraKey;
-import dji.keysdk.GimbalKey;
+import dji.keysdk.FlightControllerKey;
 import dji.keysdk.KeyManager;
-import dji.keysdk.callback.ActionCallback;
 import dji.keysdk.callback.GetCallback;
-import dji.keysdk.callback.KeyListener;
-import dji.keysdk.callback.SetCallback;
-import dji.sdk.base.BaseProduct;
 import dji.sdk.flightcontroller.FlightController;
 import dji.sdk.mission.MissionControl;
 import dji.sdk.mission.hotpoint.HotpointMissionOperator;
 import dji.sdk.products.Aircraft;
-import dji.sdk.sdkmanager.DJISDKManager;
 
 
 public class TestView extends LinearLayout implements PresentableView {
@@ -45,6 +39,11 @@ public class TestView extends LinearLayout implements PresentableView {
     private Button landBtn;
     private Button goHomeBtn;
     private Button circleBtn;
+
+    private TextView circleText;
+    private SeekBar circleSeekBar;
+    private final int circleRadius = 8;
+    HotpointMissionOperator missionOperator;
 
     FlightController flightController;
 
@@ -63,7 +62,41 @@ public class TestView extends LinearLayout implements PresentableView {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         flightController = ((Aircraft) DJISampleApplication.getProductInstance()).getFlightController();
-        useDJIKeyedInterface();
+        missionOperator = MissionControl.getInstance().getHotpointMissionOperator();
+        setListeners();
+        configureSettings();
+    }
+
+    private void configureSettings(){
+        // ENABLE PRECISION LANDING FOR ACCURATE RETURN TO HOME
+        flightController.getFlightAssistant().setPrecisionLandingEnabled(true, new CommonCallbacks.CompletionCallback() {
+            @Override
+            public void onResult(DJIError djiError) {
+                // :D
+            }
+        });
+        // ADD LISTENER TO AUTO-COMPLETE LANDING SEQUENCES
+        FlightControllerKey landingConf = FlightControllerKey.create(FlightControllerKey.IS_LANDING_CONFIRMATION_NEEDED);
+        KeyManager.getInstance().getValue(landingConf, new GetCallback() {
+                    @Override
+                    public void onSuccess(final @NonNull Object o) {
+                        if (o instanceof Boolean && o == true) {
+                            flightController.confirmLanding(new CommonCallbacks.CompletionCallback() {
+                                @Override
+                                public void onResult(DJIError djiError) {
+                                    // already? I was just getting started!
+                                }
+                            });
+                        }
+                    }
+                    @Override
+                    public void onFailure(@NonNull DJIError djiError) {
+                        // idk
+                    }
+                }
+        );
+        // todo: enable obstacle avoidance?
+        // maybe if enabled, take off for easy debugging?
     }
 
     @Override
@@ -71,7 +104,8 @@ public class TestView extends LinearLayout implements PresentableView {
         super.onDetachedFromWindow();
     }
 
-    private void useDJIKeyedInterface() {
+    private void setListeners() {
+        // TAKE OFF
         takeOffBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,6 +117,7 @@ public class TestView extends LinearLayout implements PresentableView {
                 });
             }
         });
+        // LANDING
         landBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,6 +129,7 @@ public class TestView extends LinearLayout implements PresentableView {
                 });
             }
         });
+        // GO HOME
         goHomeBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,18 +147,50 @@ public class TestView extends LinearLayout implements PresentableView {
                 });
             }
         });
+        // ADJUST CIRCLE VELOCITY
+        circleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if (missionOperator.getCurrentState() == HotpointMissionState.EXECUTING ||
+                        missionOperator.getCurrentState() == HotpointMissionState.INITIAL_PHASE ||
+                        missionOperator.getCurrentState() == HotpointMissionState.EXECUTION_PAUSED) {
+                    missionOperator.setAngularVelocity((circleSeekBar.getProgress()+1), new CommonCallbacks.CompletionCallback() {
+                        @Override
+                        public void onResult(DJIError djiError) {
+                            // la di da
+                        }
+                    });
+                }
+                circleSeekBar.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        circleText.setText("Circle Velocity: "+ (circleSeekBar.getProgress()+1) + "°/sec"
+                                + "\n(" + 360/(circleSeekBar.getProgress()+1) + " secs for full rotation)");
+                    }
+                });
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        // START CIRCLING
         circleBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                HotpointMissionOperator missionOperator = MissionControl.getInstance().getHotpointMissionOperator();
-
                 LocationCoordinate3D droneLocation = flightController.getState().getAircraftLocation();
 
                 HotpointMission mission = new HotpointMission(
                         new LocationCoordinate2D(droneLocation.getLatitude(), droneLocation.getLongitude()), // 2D point to circle around
                         5, // altitude in meters (~16ft)
-                        8, // radius of circle in meters (~25ft)
-                        18, // angular velocity in degrees per second (full rotation in ~20 seconds)
+                        circleRadius, // radius of circle in meters (~25ft)
+                        circleSeekBar.getProgress()+1, // angular velocity in degrees per second (full rotation in ~20 seconds)
                         true, // move clockwise?
                         HotpointStartPoint.NORTH, // where should the drone start to traverse the circle?
                         HotpointHeading.TOWARDS_HOT_POINT // which way should the drone face while circling?
@@ -148,6 +216,12 @@ public class TestView extends LinearLayout implements PresentableView {
         landBtn = (Button) findViewById(R.id.landBtn_title);
         goHomeBtn = (Button) findViewById(R.id.goHomeBtn_title);
         circleBtn = (Button) findViewById(R.id.circleBtn_title);
+        circleText = (TextView) findViewById(R.id.textView4);
+
+        circleSeekBar = (SeekBar) findViewById(R.id.seekBar);
+        double maxVelocity = HotpointMissionOperator.maxAngularVelocityForRadius(circleRadius);
+        circleSeekBar.setMax(((int)maxVelocity)-1);
+        circleSeekBar.setProgress(17);
     }
 
     @Override
