@@ -32,6 +32,7 @@ import com.dji.sdk.sample.demo.key.KeyedInterfaceView;
 import com.dji.sdk.sample.demo.missionoperator.WaypointMissionOperatorView;
 import com.dji.sdk.sample.demo.mobileremotecontroller.MobileRemoteControllerView;
 import com.dji.sdk.sample.demo.remotecontroller.PushRemoteControllerDataView;
+import com.dji.sdk.sample.demo.test.TestView;
 import com.dji.sdk.sample.demo.timeline.TimelineMissionControlView;
 import com.dji.sdk.sample.internal.controller.DJISampleApplication;
 import com.dji.sdk.sample.internal.controller.ExpandableListAdapter;
@@ -70,6 +71,10 @@ public class DemoListView extends FrameLayout {
 
         // Build model for ListView
         ListBuilder builder = new ListBuilder();
+
+        builder.addGroup(R.string.component_listview_test_keyed_interface,
+                        false,
+                        new GroupItem(R.string.test_keyed_interface, TestView.class));
 
         builder.addGroup(R.string.component_listview_sdk_4_0,
                          false,

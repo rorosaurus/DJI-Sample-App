@@ -29,6 +29,7 @@
     <string name="component_listview_timeline_mission_control">Timeline Mission Control</string>
     <string name="component_listview_bluetooth">Bluetooth</string>
 
+    <string name="component_listview_test_keyed_interface">Test</string>
 
     <string name="component_listview_sdk_4.0">4.0 New Interfaces</string>
     <string name="component_listview_waypoint_mission_operator">New Waypoint Mission Operator</string>
@@ -186,5 +187,12 @@
     <string name="exposure_title">Get Exposure Setting</string>
     <string name="exposure_value">%1$s</string>
     <string name="search_for_demo">Search for demo</string>
+
+    <!-- test interface-->
+    <string name="test_keyed_interface">Test Keyed Interface</string>
+    <string name="takeOff">Take Off</string>
+    <string name="land">Land Now</string>
+    <string name="goHome">Return Home and Land</string>
+    <string name="circle">Circle Around</string>
 
 </resources>
