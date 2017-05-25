@@ -191,7 +191,7 @@
     <!-- test interface-->
     <string name="test_keyed_interface">Test Keyed Interface</string>
     <string name="takeOff">Take Off</string>
-    <string name="land">Land Now</string>
+    <string name="land">Begin/Complete Landing</string>
     <string name="goHome">Return Home and Land</string>
     <string name="circle">Circle Around</string>
 

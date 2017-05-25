@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent">
-
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <Button
         android:id="@+id/takeOffBtn_title"
@@ -19,13 +19,27 @@
         style="@style/common_button"
     />
 
-
     <Button
         android:id="@+id/goHomeBtn_title"
         android:layout_gravity="center_horizontal"
         android:text="@string/goHome"
         style="@style/common_button"
     />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Circle Velocity: 18°/sec\n(20 secs for full rotation)" />
 
     <Button
         android:id="@+id/circleBtn_title"
@@ -36,6 +50,7 @@
 
     <com.dji.sdk.sample.internal.view.BaseFpvView
         style="@style/fpv"
-        android:layout_centerHorizontal="true"/>
+        android:layout_marginTop="30dp"
+        android:layout_height="200dp" />
 
-</merge>
+    </LinearLayout>
