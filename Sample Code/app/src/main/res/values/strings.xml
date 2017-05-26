@@ -191,8 +191,11 @@
     <!-- test interface-->
     <string name="test_keyed_interface">Test Keyed Interface</string>
     <string name="takeOff">Take Off</string>
-    <string name="land">Begin/Complete Landing</string>
+    <string name="land">Land Here</string>
     <string name="goHome">Return Home and Land</string>
+    <string name="gestStart">Start Gesture Mode</string>
+    <string name="gestStop">Stop Gesture Mode</string>
     <string name="circle">Circle Around</string>
+    <string name="stopCircle">Stop Circling</string>
 
 </resources>
