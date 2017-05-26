@@ -11,46 +11,65 @@
         style="@style/common_button"
     />
 
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:weightSum="2"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/landBtn_title"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/land"
-        style="@style/common_button"
-    />
+        <Button
+            android:id="@+id/landBtn_title"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            style="@style/common_button"
+            android:layout_weight="1"
+            android:text="@string/land" />
 
-    <Button
-        android:id="@+id/goHomeBtn_title"
+        <Button
+            android:id="@+id/goHomeBtn_title"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            style="@style/common_button"
+            android:text="@string/goHome" />
+
+    </LinearLayout>
+
+    <ToggleButton
+        android:id="@+id/gestButton_title"
         android:layout_gravity="center_horizontal"
-        android:text="@string/goHome"
+        android:layout_width="wrap_content"
+        android:textOff="@string/gestStart"
+        android:textOn="@string/gestStop"
         style="@style/common_button"
-    />
+        />
 
     <SeekBar
         android:id="@+id/seekBar"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
         android:layout_gravity="center_horizontal"
-        android:layout_width="250dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/seekerText_title"
         android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Circle Velocity: 18°/sec\n(20 secs for full rotation)" />
+        android:text="Circle Velocity: N/A°/sec\n(N/A secs for full rotation)" />
 
-    <Button
+    <ToggleButton
         android:id="@+id/circleBtn_title"
         android:layout_gravity="center_horizontal"
-        android:text="@string/circle"
+        android:textOff="@string/circle"
+        android:textOn="@string/stopCircle"
         style="@style/common_button"
         />
 
-    <com.dji.sdk.sample.internal.view.BaseFpvView
-        style="@style/fpv"
-        android:layout_marginTop="30dp"
-        android:layout_height="200dp" />
+    <!--<com.dji.sdk.sample.internal.view.BaseFpvView-->
+        <!--style="@style/fpv"-->
+        <!--android:layout_marginTop="20dp"-->
+        <!--android:layout_height="200dp" />-->
 
     </LinearLayout>
