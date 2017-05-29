@@ -20,6 +20,8 @@ import com.dji.sdk.sample.internal.view.PresentableView;
 import dji.common.error.DJIError;
 import dji.common.flightcontroller.LocationCoordinate3D;
 import dji.common.mission.activetrack.ActiveTrackMission;
+import dji.common.mission.activetrack.ActiveTrackMissionEvent;
+import dji.common.mission.activetrack.ActiveTrackState;
 import dji.common.mission.hotpoint.HotpointHeading;
 import dji.common.mission.hotpoint.HotpointMission;
 import dji.common.mission.hotpoint.HotpointStartPoint;
@@ -30,6 +32,7 @@ import dji.keysdk.KeyManager;
 import dji.keysdk.callback.GetCallback;
 import dji.sdk.flightcontroller.FlightController;
 import dji.sdk.mission.MissionControl;
+import dji.sdk.mission.activetrack.ActiveTrackMissionOperatorListener;
 import dji.sdk.mission.activetrack.ActiveTrackOperator;
 import dji.sdk.mission.hotpoint.HotpointMissionOperator;
 import dji.sdk.products.Aircraft;
@@ -144,7 +147,7 @@ public class TestView extends LinearLayout implements PresentableView {
             }
         });
         // ACTIVE TRACK LISTENERS
-        /*activeTrackOperator.addListener(new ActiveTrackMissionOperatorListener() {
+        activeTrackOperator.addListener(new ActiveTrackMissionOperatorListener() {
             @Override
             public void onUpdate(ActiveTrackMissionEvent activeTrackMissionEvent) {
                 // AUTO CONFIRM ACTIVE TRACK MISSIONS
@@ -152,11 +155,11 @@ public class TestView extends LinearLayout implements PresentableView {
                     activeTrackOperator.acceptConfirmation(logErrorCallback);
                 }
                 // PREVENT AIRCRAFT FROM FOLLOWING ON ACTIVE TRACK MISSIONS
-//                else if (activeTrackMissionEvent.getCurrentState() == ActiveTrackState.AIRCRAFT_FOLLOWING) {
-//                    activeTrackOperator.stopAircraftFollowing(logErrorCallback);
-//                }
+                else if (activeTrackMissionEvent.getCurrentState() == ActiveTrackState.AIRCRAFT_FOLLOWING) {
+                    activeTrackOperator.stopAircraftFollowing(logErrorCallback);
+                }
             }
-        });*/
+        });
         // ADJUST CIRCLE VELOCITY
         circleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -165,7 +168,7 @@ public class TestView extends LinearLayout implements PresentableView {
                     // update the text
                     setSeekerBarText();
 
-                    // and update the currentmission
+                    // and update the current mission
                     hotpointMissionOperator.setAngularVelocity(-(circleSeekBar.getProgress()), logErrorCallback);
                 }
             }

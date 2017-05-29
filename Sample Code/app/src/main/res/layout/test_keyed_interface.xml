@@ -67,9 +67,9 @@
         style="@style/common_button"
         />
 
-    <!--<com.dji.sdk.sample.internal.view.BaseFpvView-->
-        <!--style="@style/fpv"-->
-        <!--android:layout_marginTop="20dp"-->
-        <!--android:layout_height="200dp" />-->
+    <com.dji.sdk.sample.internal.view.BaseFpvView
+        style="@style/fpv"
+        android:layout_marginTop="20dp"
+        android:layout_height="200dp" />
 
     </LinearLayout>
