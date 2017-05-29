@@ -19,9 +19,6 @@ import com.dji.sdk.sample.internal.view.PresentableView;
 
 import dji.common.error.DJIError;
 import dji.common.flightcontroller.LocationCoordinate3D;
-import dji.common.mission.activetrack.ActiveTrackMission;
-import dji.common.mission.activetrack.ActiveTrackMissionEvent;
-import dji.common.mission.activetrack.ActiveTrackState;
 import dji.common.mission.hotpoint.HotpointHeading;
 import dji.common.mission.hotpoint.HotpointMission;
 import dji.common.mission.hotpoint.HotpointStartPoint;
@@ -32,8 +29,6 @@ import dji.keysdk.KeyManager;
 import dji.keysdk.callback.GetCallback;
 import dji.sdk.flightcontroller.FlightController;
 import dji.sdk.mission.MissionControl;
-import dji.sdk.mission.activetrack.ActiveTrackMissionOperatorListener;
-import dji.sdk.mission.activetrack.ActiveTrackOperator;
 import dji.sdk.mission.hotpoint.HotpointMissionOperator;
 import dji.sdk.products.Aircraft;
 
@@ -43,7 +38,6 @@ public class TestView extends LinearLayout implements PresentableView {
     private Button takeOffBtn;
     private Button landBtn;
     private Button goHomeBtn;
-    private ToggleButton gestBtn;
     private ToggleButton circleBtn;
     private TextView circleText;
     private SeekBar circleSeekBar;
@@ -53,7 +47,6 @@ public class TestView extends LinearLayout implements PresentableView {
 
     private FlightController flightController;
     private HotpointMissionOperator hotpointMissionOperator;
-    private ActiveTrackOperator activeTrackOperator;
 
     private CommonCallbacks.CompletionCallback logErrorCallback = new CommonCallbacks.CompletionCallback() {
         @Override
@@ -78,7 +71,6 @@ public class TestView extends LinearLayout implements PresentableView {
         super.onAttachedToWindow();
         flightController = ((Aircraft) DJISampleApplication.getProductInstance()).getFlightController();
         hotpointMissionOperator = MissionControl.getInstance().getHotpointMissionOperator();
-        activeTrackOperator = MissionControl.getInstance().getActiveTrackOperator();
         setListeners();
         configureSettings();
     }
@@ -101,8 +93,6 @@ public class TestView extends LinearLayout implements PresentableView {
                     }
                 }
         );
-        // EXPLICITLY DISABLE RETREAT FOR ACTIVE TRACK
-//        activeTrackOperator.setRetreatEnabled(false, logErrorCallback);
     }
 
     @Override
@@ -131,33 +121,6 @@ public class TestView extends LinearLayout implements PresentableView {
             public void onClick(View v) {
                 flightController.setGoHomeHeightInMeters(20, logErrorCallback);
                 flightController.startGoHome(logErrorCallback);
-            }
-        });
-        // ENABLE/DISABLE GESTURES
-        gestBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean enableGest) {
-                if (enableGest) {
-                    activeTrackOperator.setGestureModeEnabled(true, logErrorCallback);
-                }
-                else { // disable and stop
-                    activeTrackOperator.setGestureModeEnabled(false, logErrorCallback);
-                    activeTrackOperator.stopTracking(logErrorCallback);
-                }
-            }
-        });
-        // ACTIVE TRACK LISTENERS
-        activeTrackOperator.addListener(new ActiveTrackMissionOperatorListener() {
-            @Override
-            public void onUpdate(ActiveTrackMissionEvent activeTrackMissionEvent) {
-                // AUTO CONFIRM ACTIVE TRACK MISSIONS
-                if (activeTrackMissionEvent.getCurrentState() == ActiveTrackState.WAITING_FOR_CONFIRMATION) {
-                    activeTrackOperator.acceptConfirmation(logErrorCallback);
-                }
-                // PREVENT AIRCRAFT FROM FOLLOWING ON ACTIVE TRACK MISSIONS
-                else if (activeTrackMissionEvent.getCurrentState() == ActiveTrackState.AIRCRAFT_FOLLOWING) {
-                    activeTrackOperator.stopAircraftFollowing(logErrorCallback);
-                }
             }
         });
         // ADJUST CIRCLE VELOCITY
@@ -218,7 +181,6 @@ public class TestView extends LinearLayout implements PresentableView {
         takeOffBtn = (Button) findViewById(R.id.takeOffBtn_title);
         landBtn = (Button) findViewById(R.id.landBtn_title);
         goHomeBtn = (Button) findViewById(R.id.goHomeBtn_title);
-        gestBtn = (ToggleButton) findViewById(R.id.gestButton_title);
         circleBtn = (ToggleButton) findViewById(R.id.circleBtn_title);
         circleText = (TextView) findViewById(R.id.seekerText_title);
 
