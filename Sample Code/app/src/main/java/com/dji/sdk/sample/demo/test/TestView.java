@@ -203,12 +203,11 @@ public class TestView extends LinearLayout implements PresentableView {
 
         // update the text
         if(angVelocity == 0){
-            setText(circleText, "Circle Velocity: 0°/sec\n(infinity secs for full rotation)\nCircle Radius: " + circleRadius + " meters");
+            setText(circleText, "Circle Velocity: 0°/sec\n(infinity secs for full rotation)");
         }
         else {
             setText(circleText, "Circle Velocity: "+ (angVelocity) + "°/sec"
-                    + "\n(" + 360/(Math.abs(angVelocity)) + " secs for full rotation)"
-                    + "\nCircle Radius: " + circleRadius + " meters");
+                    + "\n(" + 360/(Math.abs(angVelocity)) + " secs for full rotation)");
         }
     }
 
