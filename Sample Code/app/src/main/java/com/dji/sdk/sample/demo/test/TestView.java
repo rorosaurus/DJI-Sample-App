@@ -3,7 +3,6 @@ package com.dji.sdk.sample.demo.test;
 import android.app.Service;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,6 @@ import com.dji.sdk.sample.internal.view.PresentableView;
 
 import dji.common.error.DJIError;
 import dji.common.flightcontroller.LocationCoordinate3D;
-import dji.common.mission.hotpoint.HotpoinMissionEvent;
 import dji.common.mission.hotpoint.HotpointHeading;
 import dji.common.mission.hotpoint.HotpointMission;
 import dji.common.mission.hotpoint.HotpointStartPoint;
@@ -32,7 +30,6 @@ import dji.keysdk.callback.GetCallback;
 import dji.sdk.flightcontroller.FlightController;
 import dji.sdk.mission.MissionControl;
 import dji.sdk.mission.hotpoint.HotpointMissionOperator;
-import dji.sdk.mission.hotpoint.HotpointMissionOperatorListener;
 import dji.sdk.products.Aircraft;
 
 
@@ -45,8 +42,7 @@ public class TestView extends LinearLayout implements PresentableView {
     private TextView circleText;
     private SeekBar circleSeekBar;
 
-    private final int startingCircleRadius = 8;
-    private int circleRadius = startingCircleRadius;
+    private final int circleRadius = 8;
     private int maxVelocity = (int) HotpointMissionOperator.maxAngularVelocityForRadius(circleRadius);
 
     private FlightController flightController;
@@ -127,31 +123,13 @@ public class TestView extends LinearLayout implements PresentableView {
                 flightController.startGoHome(logErrorCallback);
             }
         });
-        // listen for radius updates
-        hotpointMissionOperator.addListener(new HotpointMissionOperatorListener() {
-            @Override
-            public void onExecutionUpdate(@NonNull HotpoinMissionEvent hotpointMissionEvent) {
-                if ((int) hotpointMissionEvent.getRadius() != 0) {
-                    circleRadius = (int) hotpointMissionEvent.getRadius();
-                }
-            }
-
-            public void onExecutionStart() {
-
-            }
-
-            @Override
-            public void onExecutionFinish(@Nullable DJIError djiError) {
-
-            }
-        });
         // ADJUST CIRCLE VELOCITY
         circleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
                 if(fromUser){
                     // update the bar
-                    setSeekerBar();
+                    setSeekerBarText();
 
                     // update the seekerbar and the current mission
                     hotpointMissionOperator.setAngularVelocity(getAngVelocity(), logErrorCallback);
@@ -180,7 +158,7 @@ public class TestView extends LinearLayout implements PresentableView {
                     HotpointMission mission = new HotpointMission(
                             new LocationCoordinate2D(droneLocation.getLatitude(), droneLocation.getLongitude()), // 2D point to circle around
                             5, // altitude in meters (~16ft)
-                            startingCircleRadius, // radius of circle in meters (~25ft)
+                            circleRadius, // radius of circle in meters (~25ft)
                             Math.abs(getAngVelocity()), // angular velocity in degrees per second (full rotation in ~20 seconds)
                             clockwise, // move clockwise?
                             HotpointStartPoint.NORTH, // where should the drone start to traverse the circle?
@@ -211,7 +189,7 @@ public class TestView extends LinearLayout implements PresentableView {
         circleSeekBar = (SeekBar) findViewById(R.id.seekBar);
         circleSeekBar.setMax(maxVelocity*2); // twice as long so we can do pos and negative
         circleSeekBar.setProgress((maxVelocity*3)/2);  // default angular velocity is half max
-        setSeekerBar();
+        setSeekerBarText();
     }
 
     private int getAngVelocity() {
@@ -219,13 +197,7 @@ public class TestView extends LinearLayout implements PresentableView {
         return circleSeekBar.getProgress() - maxVelocity;
     }
 
-    private int setSeekerBar(){
-        //update the state variables
-        maxVelocity = (int) HotpointMissionOperator.maxAngularVelocityForRadius(circleRadius);
-
-        // update the seekerbar
-        if(circleSeekBar.getMax() != maxVelocity*2) circleSeekBar.setMax(maxVelocity*2);
-
+    private void setSeekerBarText(){
         // calculate the expected velocity
         int angVelocity = getAngVelocity();
 
@@ -238,7 +210,6 @@ public class TestView extends LinearLayout implements PresentableView {
                     + "\n(" + 360/(Math.abs(angVelocity)) + " secs for full rotation)"
                     + "\nCircle Radius: " + circleRadius + " meters");
         }
-        return angVelocity;
     }
 
     private void setText(final TextView tv, final String text) {
