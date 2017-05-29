@@ -48,7 +48,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Circle Velocity: N/A°/sec\n(N/A secs for full rotation)" />
+        android:text="Circle Velocity: N/A°/sec\n(N/A secs for full rotation)\n Circle Radius: N/A meters" />
 
     <ToggleButton
         android:id="@+id/circleBtn_title"
